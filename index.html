@@ -2,74 +2,129 @@
 <html lang="ar" dir="rtl">
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>حروف — لعبة buzzer بفريقين</title>
-<link rel="stylesheet" href="style.css" />
-<body>
-<div class="container">
+<title>تجربة الغرف — بسيط جدًا</title>
+<style>
+  body{font-family:system-ui,Arial;background:#f7f7f8;margin:0}
+  .wrap{max-width:560px;margin:24px auto;padding:16px}
+  .card{background:#fff;border-radius:14px;box-shadow:0 8px 20px rgba(0,0,0,.06);padding:16px}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  input,button{padding:10px;border:1px solid #ddd;border-radius:10px}
+  button{cursor:pointer}
+  ul{margin:8px 0 0;padding:0;list-style:none}
+  li{padding:6px 8px;border:1px solid #eee;border-radius:8px;margin-bottom:6px;background:#fafafa}
+  .muted{opacity:.7;font-size:13px}
+</style>
 
+<div class="wrap">
   <div class="card">
-    <h1>حروف — مشغل الجلسات</h1>
-    <p class="small">افتح غرفة، وزّع اللاعبين على فريقين (الأخضر / البرتقالي)، وابدأ الأسئلة. أول من يضغط الزر له حق الإجابة <b>٣ ثواني</b>.</p>
+    <h3>تجربة الغرف (Firebase)</h3>
     <div class="row">
-      <input id="name" placeholder="اسمك (مقدم/لاعب)">
-      <input id="room" placeholder="كود الغرفة (مثال: ABC12)">
-      <button class="btn primary" id="create">إنشاء غرفة</button>
-      <button class="btn" id="join">دخول غرفة</button>
-      <button class="btn copy" id="copy">نسخ رابط الغرفة</button>
+      <input id="name" placeholder="اسمك">
+      <input id="room" placeholder="كود الغرفة (مثال ABC12)">
     </div>
-    <p id="status" class="small"></p>
-  </div>
+    <div class="row" style="margin-top:8px">
+      <button id="create">إنشاء غرفة</button>
+      <button id="join">دخول غرفة</button>
+      <button id="copy">نسخ رابط</button>
+    </div>
+    <p id="status" class="muted"></p>
 
-  <div id="hostPanel" class="card" style="display:none">
-    <h2>لوحة المقدم</h2>
-    <div class="grid">
-      <div class="team-box">
-        <div>فريق <span class="badge green">الأخضر</span></div>
-        <div class="score" id="scoreGreen">0</div>
-      </div>
-      <div class="team-box">
-        <div>فريق <span class="badge orange">البرتقالي</span></div>
-        <div class="score" id="scoreOrange">0</div>
-      </div>
+    <div id="roomBox" style="display:none;margin-top:10px">
+      <h4>الغرفة: <span id="rid">-</span></h4>
+      <p class="muted">ارسل الرابط لصاحبك ليدخل نفس الغرفة.</p>
+      <h4>اللاعبون الآن:</h4>
+      <ul id="players"></ul>
     </div>
-    <div class="sep"></div>
-    <div class="row">
-      <input id="letter" placeholder="الحرف (اختياري)">
-      <input id="question" placeholder="اكتب السؤال هنا">
-      <button class="btn primary" id="openQ">فتح السؤال</button>
-      <button class="btn" id="resetRound">جولة جديدة</button>
-    </div>
-    <p class="small">المسموح بالإجابة: <span id="allowedTeamTxt">الفريقين</span></p>
-    <div class="row">
-      <button class="btn" id="markCorrect">✔️ صح</button>
-      <button class="btn" id="markWrong">✖️ خطأ (ينتقل حق الجواب للفريق الثاني)</button>
-    </div>
-    <div class="sep"></div>
-    <p>أول من ضغط: <b id="firstBuzz">-</b></p>
-    <p>الوقت المتبقي: <span class="timer" id="timer">0.0</span>s</p>
   </div>
-
-  <div id="playerPanel" class="card" style="display:none">
-    <h2>واجهة اللاعب</h2>
-    <div class="row">
-      <button class="btn" id="joinGreen">انضم لفريق الأخضر 🟢</button>
-      <button class="btn" id="joinOrange">انضم لفريق البرتقالي 🟠</button>
-    </div>
-    <p class="small">فريقك: <b id="myTeam">-</b></p>
-    <div class="sep"></div>
-    <p>الحرف: <b id="liveLetter">-</b></p>
-    <p>السؤال: <b id="liveQuestion">-</b></p>
-    <p>أول من ضغط: <b id="liveFirst">-</b></p>
-    <p>الوقت المتبقي: <span class="timer" id="liveTimer">0.0</span>s</p>
-    <button id="buzzerBtn" class="buzzer">اضغط للإجابة!</button>
-  </div>
-
-  <div class="footer small">اصدار أولي بسيط — يعمل عبر Firebase Realtime Database. عدّل الإعدادات في <code>script.js</code>.</div>
 </div>
 
-<!-- Firebase CDN (Compat) -->
+<!-- Firebase (Compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
-<script src="script.js"></script>
-</body>
+<script>
+// ضع إعداداتك هنا
+const firebaseConfig = {
+  apiKey: "AIzaSyBFNhGEb5158YDWN2qKDUKPFQNeehtSqmc",
+  authDomain: "haroof-game-ca4f3.firebaseapp.com",
+  databaseURL: "https://haroof-game-ca4f3-default-rtdb.firebaseio.com",
+  projectId: "haroof-game-ca4f3",
+  storageBucket: "haroof-game-ca4f3.firebasestorage.app",
+  messagingSenderId: "91979956823",
+  appId: "1:91979956823:web:725e87bb8cf41fed5c9912",
+  measurementId: "G-L87XY7YQGF"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// عناصر
+const nameEl = document.getElementById('name');
+const roomEl = document.getElementById('room');
+const statusEl = document.getElementById('status');
+const copyBtn = document.getElementById('copy');
+const roomBox = document.getElementById('roomBox');
+const ridEl = document.getElementById('rid');
+const playersEl = document.getElementById('players');
+
+let uid = Math.random().toString(36).slice(2,9);
+let roomId = new URLSearchParams(location.search).get('room') || '';
+if(roomId) roomEl.value = roomId;
+let joined = false;
+
+function setStatus(t){ statusEl.textContent = t || ''; }
+function rRef(id){ return db.ref('testRooms/'+id); }
+function playersRef(id){ return db.ref('testRooms/'+id+'/players'); }
+
+function showRoom(id){
+  roomId = id;
+  const url = location.origin+location.pathname+'?room='+roomId;
+  history.replaceState({},'',url);
+  ridEl.textContent = roomId;
+  roomBox.style.display = 'block';
+  copyBtn.onclick = ()=>{ navigator.clipboard.writeText(url); setStatus('تم نسخ الرابط'); };
+  listenPlayers();
+}
+
+async function createRoom(){
+  const name = nameEl.value.trim() || ('Player-'+uid);
+  const id = roomEl.value.trim() || Math.random().toString(36).slice(2,7).toUpperCase();
+  await rRef(id).set({ createdAt: Date.now() });
+  await joinAsPlayer(id, name);
+}
+async function joinRoom(){
+  const name = nameEl.value.trim() || ('Player-'+uid);
+  const id = roomEl.value.trim();
+  if(!id){ setStatus('اكتب كود الغرفة أو اضغط إنشاء غرفة'); return; }
+  const snap = await rRef(id).get();
+  if(!snap.exists()){ setStatus('الغرفة غير موجودة'); return; }
+  await joinAsPlayer(id, name);
+}
+
+async function joinAsPlayer(id, name){
+  // سجّل اللاعب + احذف تلقائيًا عند الخروج
+  await playersRef(id).child(uid).set({ name, at: Date.now() });
+  playersRef(id).child(uid).onDisconnect().remove();
+  joined = true;
+  showRoom(id);
+  setStatus('تم الدخول للغرفة. شارك الرابط.');
+}
+
+function listenPlayers(){
+  playersRef(roomId).on('value', (snap)=>{
+    playersEl.innerHTML = '';
+    const val = snap.val() || {};
+    Object.values(val).forEach(p=>{
+      const li = document.createElement('li');
+      li.textContent = p.name;
+      playersEl.appendChild(li);
+    });
+  });
+}
+
+// أزرار
+document.getElementById('create').onclick = createRoom;
+document.getElementById('join').onclick = joinRoom;
+
+// لو الرابط فيه ?room=
+if(roomId){ setStatus('اضغط "دخول غرفة" للدخول: '+roomId); }
+</script>
 </html>

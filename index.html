@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>حروف — لعبة buzzer بفريقين</title>
+<link rel="stylesheet" href="style.css" />
+<body>
+<div class="container">
+
+  <div class="card">
+    <h1>حروف — مشغل الجلسات</h1>
+    <p class="small">افتح غرفة، وزّع اللاعبين على فريقين (الأخضر / البرتقالي)، وابدأ الأسئلة. أول من يضغط الزر له حق الإجابة <b>٣ ثواني</b>.</p>
+    <div class="row">
+      <input id="name" placeholder="اسمك (مقدم/لاعب)">
+      <input id="room" placeholder="كود الغرفة (مثال: ABC12)">
+      <button class="btn primary" id="create">إنشاء غرفة</button>
+      <button class="btn" id="join">دخول غرفة</button>
+      <button class="btn copy" id="copy">نسخ رابط الغرفة</button>
+    </div>
+    <p id="status" class="small"></p>
+  </div>
+
+  <div id="hostPanel" class="card" style="display:none">
+    <h2>لوحة المقدم</h2>
+    <div class="grid">
+      <div class="team-box">
+        <div>فريق <span class="badge green">الأخضر</span></div>
+        <div class="score" id="scoreGreen">0</div>
+      </div>
+      <div class="team-box">
+        <div>فريق <span class="badge orange">البرتقالي</span></div>
+        <div class="score" id="scoreOrange">0</div>
+      </div>
+    </div>
+    <div class="sep"></div>
+    <div class="row">
+      <input id="letter" placeholder="الحرف (اختياري)">
+      <input id="question" placeholder="اكتب السؤال هنا">
+      <button class="btn primary" id="openQ">فتح السؤال</button>
+      <button class="btn" id="resetRound">جولة جديدة</button>
+    </div>
+    <p class="small">المسموح بالإجابة: <span id="allowedTeamTxt">الفريقين</span></p>
+    <div class="row">
+      <button class="btn" id="markCorrect">✔️ صح</button>
+      <button class="btn" id="markWrong">✖️ خطأ (ينتقل حق الجواب للفريق الثاني)</button>
+    </div>
+    <div class="sep"></div>
+    <p>أول من ضغط: <b id="firstBuzz">-</b></p>
+    <p>الوقت المتبقي: <span class="timer" id="timer">0.0</span>s</p>
+  </div>
+
+  <div id="playerPanel" class="card" style="display:none">
+    <h2>واجهة اللاعب</h2>
+    <div class="row">
+      <button class="btn" id="joinGreen">انضم لفريق الأخضر 🟢</button>
+      <button class="btn" id="joinOrange">انضم لفريق البرتقالي 🟠</button>
+    </div>
+    <p class="small">فريقك: <b id="myTeam">-</b></p>
+    <div class="sep"></div>
+    <p>الحرف: <b id="liveLetter">-</b></p>
+    <p>السؤال: <b id="liveQuestion">-</b></p>
+    <p>أول من ضغط: <b id="liveFirst">-</b></p>
+    <p>الوقت المتبقي: <span class="timer" id="liveTimer">0.0</span>s</p>
+    <button id="buzzerBtn" class="buzzer">اضغط للإجابة!</button>
+  </div>
+
+  <div class="footer small">اصدار أولي بسيط — يعمل عبر Firebase Realtime Database. عدّل الإعدادات في <code>script.js</code>.</div>
+</div>
+
+<!-- Firebase CDN (Compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

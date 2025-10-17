@@ -1,12 +1,13 @@
 // ========== عدّل إعدادات Firebase هنا ==========
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "XXXX",
-  appId: "XXXX"
+  apiKey: "AIzaSyBFNhGEb5158YDWN2qKDUKPFQNeehtSqmc",
+  authDomain: "haroof-game-ca4f3.firebaseapp.com",
+  databaseURL: "https://haroof-game-ca4f3-default-rtdb.firebaseio.com",
+  projectId: "haroof-game-ca4f3",
+  storageBucket: "haroof-game-ca4f3.firebasestorage.app",
+  messagingSenderId: "91979956823",
+  appId: "1:91979956823:web:725e87bb8cf41fed5c9912",
+  measurementId: "G-L87XY7YQGF"
 };
 // ==============================================
 
